@@ -33,7 +33,7 @@ class Segment:
             masks = self.mask_generator.generate(image_rgb)
             output_image = self.annotate_image(image_rgb, masks)
             # save the output image
-            cv2.imwrite("output.png", output_image)
+            cv2.imwrite("data/output.png", output_image)
             
             is_success, buffer = cv2.imencode(".png", output_image)
             if not is_success:
