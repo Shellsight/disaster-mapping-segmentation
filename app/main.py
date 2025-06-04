@@ -9,7 +9,7 @@ from app.core.logger import logger
 from app.api import segment
 
 def create_app() -> FastAPI:
-    logger.info("Starting RAG System application")
+    logger.info("Starting Disaster Mapping Application")
     
     app = FastAPI(
         title=settings.APP_NAME,
