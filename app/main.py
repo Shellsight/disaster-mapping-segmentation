@@ -32,7 +32,8 @@ def create_app() -> FastAPI:
     # Initialize templates
     templates = Jinja2Templates(directory="app/templates")
 
-    app.include_router(segment.router, prefix=settings.API_PREFIX)
+    # Include routers
+    app.include_router(segment.router)  # Remove the prefix for the segment router
     logger.info("API routers configured")
 
     @app.get("/")

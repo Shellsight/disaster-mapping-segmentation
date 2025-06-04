@@ -44,11 +44,36 @@
                         <button type="button" id="change-image" class="text-sm text-blue-500 hover:text-blue-700">
                             Change Image
                         </button>
-                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
-                            Process Image
-                        </button>
+                        <div class="flex items-center gap-4">
+                            <div id="loading" class="hidden">
+                                <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </div>
+                            <button type="submit" id="process-button" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                                Process Image
+                            </button>
+                        </div>
                     </div>
                 </form>
+                
+                <!-- Error Alert -->
+                <div id="error-alert" class="hidden mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-red-800">Processing Error</h3>
+                            <div class="mt-1">
+                                <p id="error-message" class="text-sm text-red-700"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div id="result" class="mt-8 hidden">
@@ -66,7 +91,27 @@
                     </div>
                     <div id="detection-results" class="mt-4 p-4 bg-gray-50 rounded-lg">
                         <h3 class="text-sm font-medium text-gray-600 mb-2">Detection Results</h3>
-                        <pre id="results-json" class="text-sm text-gray-500 overflow-auto"></pre>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <h4 class="text-xs font-medium text-gray-500 mb-1">Summary</h4>
+                                <div id="results-summary" class="text-sm text-gray-600"></div>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-medium text-gray-500 mb-1">Objects</h4>
+                                <div class="overflow-auto max-h-40">
+                                    <table id="results-table" class="w-full text-xs">
+                                        <thead class="bg-gray-100">
+                                            <tr>
+                                                <th class="px-2 py-1 text-left">ID</th>
+                                                <th class="px-2 py-1 text-left">Confidence</th>
+                                                <th class="px-2 py-1 text-left">Area</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -84,7 +129,6 @@
         const resultSection = document.getElementById('result');
         const originalImage = document.getElementById('original-image');
         const processedImage = document.getElementById('processed-image');
-        const resultsJson = document.getElementById('results-json');
 
         // Handle drag and drop
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -149,10 +193,53 @@
             }
         }
 
+        async function displayResults(results) {
+            // Update summary
+            const summaryEl = document.getElementById('results-summary');
+            summaryEl.innerHTML = `
+                <div class="space-y-2">
+                    <p class="flex justify-between">
+                        <span class="font-medium">Total Objects:</span>
+                        <span class="text-blue-600">${results.total_objects}</span>
+                    </p>
+                    <p class="flex justify-between">
+                        <span class="font-medium">Processing Time:</span>
+                        <span class="text-blue-600">${results.processing_time}s</span>
+                    </p>
+                </div>
+            `;
+
+            // Update objects table
+            const tableBody = document.querySelector('#results-table tbody');
+            tableBody.innerHTML = '';
+            
+            results.detected_objects.forEach(obj => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-2 py-1 border-t">${obj.id}</td>
+                    <td class="px-2 py-1 border-t">${(obj.confidence * 100).toFixed(1)}%</td>
+                    <td class="px-2 py-1 border-t">${obj.area_pixels.toLocaleString()}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
         uploadForm.addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            // Hide any previous error
+            const errorAlert = document.getElementById('error-alert');
+            errorAlert.classList.add('hidden');
+            
             const formData = new FormData();
             formData.append('image', fileInput.files[0]);
+
+            // Show loading state
+            const loadingEl = document.getElementById('loading');
+            const processButton = document.getElementById('process-button');
+            loadingEl.classList.remove('hidden');
+            processButton.disabled = true;
+            processButton.classList.add('opacity-50', 'cursor-not-allowed');
 
             try {
                 const response = await fetch('/segment', {
@@ -160,9 +247,15 @@
                     body: formData
                 });
 
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+                }
+
                 const segmentationResults = response.headers.get('X-Segmentation-Results');
                 if (segmentationResults) {
-                    resultsJson.textContent = JSON.stringify(JSON.parse(segmentationResults), null, 2);
+                    const results = JSON.parse(segmentationResults);
+                    await displayResults(results);
                 }
 
                 const blob = await response.blob();
@@ -171,7 +264,16 @@
                 resultSection.classList.remove('hidden');
             } catch (error) {
                 console.error('Error:', error);
-                alert('An error occurred while processing the image.');
+                const errorAlert = document.getElementById('error-alert');
+                const errorMessage = document.getElementById('error-message');
+                errorMessage.textContent = error.message;
+                errorAlert.classList.remove('hidden');
+                resultSection.classList.add('hidden');
+            } finally {
+                // Hide loading state
+                loadingEl.classList.add('hidden');
+                processButton.disabled = false;
+                processButton.classList.remove('opacity-50', 'cursor-not-allowed');
             }
         });
     </script>
