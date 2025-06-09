@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  disaster-mapping-api:
+    build: .
+    container_name: disaster-mapping-segmentation
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+      - ./app/static:/app/app/static
+    environment:
+      - APP_NAME=AI Disaster Mapping API
+      - DEBUG=true
+      - MODEL_PATH=app/models/sam_vit_h_4b8939.pth
+      - MODEL_TYPE=vit_h
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Optional: Add a reverse proxy (uncomment if needed)
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: disaster-mapping-nginx
+  #   ports:
+  #     - "80:80"
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf
+  #   depends_on:
+  #     - disaster-mapping-api
+  #   restart: unless-stopped 

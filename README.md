@@ -20,27 +20,69 @@ A powerful AI-powered application for disaster mapping and image segmentation us
 
 ## 🔧 Installation
 
-### 1. Clone the Repository
+Choose one of the following installation methods:
+
+### Option 1: Docker (Recommended) 🐳
+
+#### Prerequisites
+- Docker and Docker Compose installed
+- NVIDIA Docker runtime (for GPU support)
+
+#### Quick Start with Docker
+
+```bash
+# Clone the repository
+git clone https://github.com/Shellsight/disaster-mapping-segmentation.git
+cd disaster-mapping-segmentation
+
+# Build and run with Docker Compose
+docker-compose up --build
+```
+
+The API will be available at `http://localhost:8080`
+
+#### Manual Docker Commands
+
+```bash
+# Build the Docker image
+docker build -t disaster-mapping-segmentation .
+
+# Run the container (with GPU support)
+docker run --gpus all -p 8080:8080 \
+  -v $(pwd)/data:/app/data \
+  -v $(pwd)/app/static:/app/app/static \
+  disaster-mapping-segmentation
+
+# Run without GPU (CPU only)
+docker run -p 8080:8080 \
+  -v $(pwd)/data:/app/data \
+  -v $(pwd)/app/static:/app/app/static \
+  disaster-mapping-segmentation
+```
+
+### Option 2: Local Installation
+
+#### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/Shellsight/disaster-mapping-segmentation.git
 cd disaster-mapping-segmentation
 ```
 
-### 2. Create Virtual Environment
+#### 2. Create Virtual Environment
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 ```
 
-### 3. Install Dependencies
+#### 3. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Download SAM Model Weights
+#### 4. Download SAM Model Weights
 
 The application expects the SAM model weights to be placed in `app/models/`. Download the ViT-H SAM model:
 
@@ -51,13 +93,13 @@ wget https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth
 cd ../..
 ```
 
-### 5. Create Required Directories
+#### 5. Create Required Directories
 
 ```bash
 mkdir -p app/static app/templates data
 ```
 
-### 6. Environment Configuration (Optional)
+#### 6. Environment Configuration (Optional)
 
 Create a `.env` file in the root directory for custom configuration:
 
@@ -71,9 +113,24 @@ MODEL_TYPE="vit_h"
 
 ## 🏃‍♂️ Quick Start
 
-### Starting the API Server
+### With Docker (Recommended)
 
 ```bash
+# Quick start with Docker Compose
+docker-compose up --build
+
+# Or build and run manually
+docker build -t disaster-mapping-segmentation .
+docker run --gpus all -p 8080:8080 disaster-mapping-segmentation
+```
+
+### Local Development
+
+```bash
+# Activate virtual environment
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Start the API server
 uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
 ```
 
@@ -240,6 +297,68 @@ isort .
 ```bash
 mypy app/
 ```
+
+## 🐳 Docker Details
+
+### Docker Features
+
+- **Multi-stage build**: Optimized for production deployment
+- **CUDA support**: GPU acceleration for faster inference
+- **Health checks**: Built-in container health monitoring
+- **Volume mounts**: Persistent data and output storage
+- **Environment configuration**: Easy customization via environment variables
+
+### Docker Commands
+
+```bash
+# Build the image
+docker build -t disaster-mapping-segmentation .
+
+# Run with GPU support (requires nvidia-docker)
+docker run --gpus all -p 8080:8080 \
+  -v $(pwd)/data:/app/data \
+  -v $(pwd)/app/static:/app/app/static \
+  disaster-mapping-segmentation
+
+# Run CPU-only
+docker run -p 8080:8080 \
+  -v $(pwd)/data:/app/data \
+  -v $(pwd)/app/static:/app/app/static \
+  disaster-mapping-segmentation
+
+# View logs
+docker logs disaster-mapping-segmentation
+
+# Access container shell
+docker exec -it disaster-mapping-segmentation /bin/bash
+```
+
+### Docker Compose Services
+
+The `docker-compose.yml` includes:
+- **API Service**: Main application with GPU support
+- **Volume Mounts**: For data persistence and output access
+- **Health Checks**: Automatic service monitoring
+- **Restart Policy**: Automatic container restart on failure
+
+### Environment Variables
+
+Configure the Docker container using environment variables:
+
+```bash
+# docker-compose.yml or docker run -e
+APP_NAME="AI Disaster Mapping API"
+DEBUG=true
+MODEL_PATH="app/models/sam_vit_h_4b8939.pth"
+MODEL_TYPE="vit_h"
+```
+
+### GPU Requirements
+
+For GPU acceleration:
+1. Install [NVIDIA Docker runtime](https://github.com/NVIDIA/nvidia-docker)
+2. Ensure CUDA-compatible GPU is available
+3. Use `--gpus all` flag or Docker Compose GPU configuration
 
 ## 📊 Model Information
 

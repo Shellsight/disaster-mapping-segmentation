@@ -1,0 +1,51 @@
+# Git
+.git
+.gitignore
+
+# Virtual environments
+.venv
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Data files (add your own patterns)
+data/*.mp4
+data/*.avi
+data/*.mov
+*.mp4
+*.avi
+*.mov
+
+# Model weights (will be downloaded during build)
+app/models/*.pth
+
+# Documentation
+README.md
+*.md
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Output files
+app/static/processed_video.mp4
+data/output.png
+
+# Notebooks
+notebooks/
+*.ipynb 
