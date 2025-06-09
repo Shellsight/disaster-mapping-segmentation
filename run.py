@@ -27,7 +27,7 @@ while cap.isOpened():
         break
 
     frame_count += 1
-    if frame_count % 30 != 0:  # Process every 10th frame
+    if frame_count % 30 != 0:  # Process every 30th frame
         continue
 
     print(f"Processing frame {frame_count}...")
@@ -68,9 +68,6 @@ while cap.isOpened():
                 print(f"Error processing response: {e}")
                 processed_image = frame
 
-            # Display the processed image
-            # cv2.imshow('Processed Frame', processed_image)
-            # Write the processed frame to the output video
             out.write(processed_image)
             
         elif response.status_code == 500:
@@ -82,8 +79,7 @@ while cap.isOpened():
                 print(f"Raw error response: {response.text}")
             
             # Use original frame as fallback
-            processed_image = frame
-            # cv2.imshow('Processed Frame', processed_image)
+            processed_image = frame  
             out.write(processed_image)
             
         else:
@@ -92,7 +88,6 @@ while cap.isOpened():
             
             # Use original frame as fallback
             processed_image = frame
-            # cv2.imshow('Processed Frame', processed_image)
             out.write(processed_image)
 
     except requests.exceptions.RequestException as e:
@@ -106,15 +101,9 @@ while cap.isOpened():
         print(f"Unexpected error: {e}")
         # Use original frame as fallback
         processed_image = frame
-        # cv2.imshow('Processed Frame', processed_image)
         out.write(processed_image)
 
-    # # Check for quit key
-    # if cv2.waitKey(1) & 0xFF == ord('q'):
-    #     break
-
 print(f"Processed {frame_count} frames")
-# cv2.destroyAllWindows()
 cap.release()
 out.release()
 print(f"Output video saved to: {output_path}")
