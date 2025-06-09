@@ -1,0 +1,88 @@
+# Disaster Response Pi Camera System Configuration
+
+# Camera Configuration
+camera:
+  resolution: [4608, 2592]  # Pi Camera V3 max resolution
+  capture_interval: 5       # seconds between captures
+  video_mode: false         # Enable video recording
+  hdr_enabled: true         # High Dynamic Range
+  compression_quality: 85   # JPEG quality (1-100)
+  format: "JPEG"           # Image format
+  auto_enhance: true        # Apply basic image enhancements
+  storage_path: "/tmp/disaster_images"
+  max_local_images: 100     # Maximum images to store locally
+
+# Network Configuration
+network:
+  primary: "4g"            # Primary connection type (4g, wifi, ethernet)
+  fallback: "wifi"         # Fallback connection
+  retry_attempts: 3        # Connection retry attempts
+  timeout: 30              # Connection timeout in seconds
+  monitor_interval: 15     # Network monitoring interval
+  auto_reconnect: true     # Auto-reconnect on failure
+  bandwidth_limit_mb: 1000 # Monthly bandwidth limit in MB
+
+# Google Cloud Platform Configuration
+gcp:
+  project_id: "disaster-response-project"
+  bucket_name: "disaster-images-myanmar"
+  api_endpoint: "https://your-disaster-api.com"
+  credentials_file: "config/gcp-credentials.json"
+  region: "asia-southeast1"
+  upload_timeout: 60       # Upload timeout in seconds
+  retry_attempts: 3        # Upload retry attempts
+  chunk_size: 1048576      # Upload chunk size (1MB)
+
+# GPS Configuration
+gps:
+  enabled: true
+  device: "/dev/ttyUSB1"   # GPS device path
+  baudrate: 9600           # GPS device baud rate
+  timeout: 10              # GPS read timeout
+  min_satellites: 4        # Minimum satellites for valid fix
+  accuracy_threshold: 10   # Accuracy threshold in meters
+
+# System Monitoring Configuration
+monitoring:
+  enabled: true
+  interval: 30             # Monitoring interval in seconds
+  temperature_limit: 80    # Temperature warning limit (°C)
+  memory_limit: 90         # Memory usage warning limit (%)
+  disk_limit: 95           # Disk usage warning limit (%)
+  cpu_limit: 85            # CPU usage warning limit (%)
+
+# Logging Configuration
+logging:
+  level: "INFO"            # DEBUG, INFO, WARNING, ERROR
+  file: "/var/log/disaster-camera.log"
+  max_size_mb: 50          # Max log file size
+  backup_count: 5          # Number of backup log files
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+# Storage Configuration
+storage:
+  cleanup_after_upload: true
+  max_storage_mb: 5000     # Maximum local storage usage
+  compress_before_upload: true
+  backup_failed_uploads: true
+
+# Device Configuration
+device:
+  id: "pi-001"             # Unique device identifier
+  location: "myanmar-earthquake"
+  operator: "disaster-response-team"
+  mission_id: "myanmar-2025-001"
+
+# Power Management
+power:
+  low_power_mode: false    # Enable low power mode
+  sleep_when_idle: false   # Sleep when no activity
+  battery_monitoring: true # Monitor battery level (if available)
+  shutdown_battery_level: 10  # Auto shutdown battery level (%)
+
+# Mission Specific Settings
+mission:
+  auto_start: true         # Auto-start on boot
+  capture_on_startup: true # Start capturing immediately
+  pre_flight_test: true    # Run pre-flight tests
+  flight_mode: true        # Optimize for flight operations 
