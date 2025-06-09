@@ -65,13 +65,8 @@ class Segment:
             Image.Image: RGB image
         """
         image_pil = Image.open(io.BytesIO(image_data))
-        image_np = np.array(image_pil)
-        if len(image_np.shape) == 3 and image_np.shape[2] == 3:
-            image = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
-        else:
-            image = cv2.cvtColor(image_np, cv2.COLOR_GRAY2BGR)
-        
-        image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image_np = np.array(image_pil)        
+        image_rgb = cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)
 
         return image_rgb
 

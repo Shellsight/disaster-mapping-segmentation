@@ -1,4 +1,5 @@
 # app/main.py
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -10,6 +11,10 @@ from app.api import segment
 
 def create_app() -> FastAPI:
     logger.info("Starting Disaster Mapping Application")
+    
+    if not os.path.exists("app/static"):
+        logger.info("Creating static and template directories")
+        os.makedirs("app/templates")
     
     app = FastAPI(
         title=settings.APP_NAME,

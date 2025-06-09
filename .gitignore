@@ -9,5 +9,16 @@ __pycache__/
 *.pywz
 *.pyzw
 
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff
+*.webp
+*.mp4
+*.avi
+*.mov
+
 *.pth
-data/
+static/

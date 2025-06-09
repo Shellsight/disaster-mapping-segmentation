@@ -20,10 +20,6 @@ async def segment_image(image: UploadFile = File(...)):
     Returns:
         The processed image with segmentation visualization and detection results
     """
-    # Validate image file
-    if not image.content_type.startswith("image/"):
-        raise HTTPException(status_code=400, detail="File must be an image")
-    
     try:
         # Read the image data
         image_data = await image.read()
