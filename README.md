@@ -23,7 +23,7 @@ A powerful AI-powered application for disaster mapping and image segmentation us
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Shellsight/disaster-mapping-segmentation.git
 cd disaster-mapping-segmentation
 ```
 
